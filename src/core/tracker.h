@@ -12,6 +12,7 @@
 #include "signal.h"
 #include <string>
 #include <list>
+#include <set>
 #include <cstddef> // nullptr_t
 #include <nlohmann/json.hpp>
 
@@ -102,12 +103,17 @@ protected:
     bool _bulkUpdate = false;
 
     std::list<std::string>* _parents = nullptr;
+    
+    struct ReachabilityResult {
+      AccessibilityLevel accessibility = AccessibilityLevel::NONE;
+      std::set<std::string> cycles; // List of parents that have caused a cycle in this evaluation.
+    };
 
-    AccessibilityLevel isReachable(const Location& location, const LocationSection& section, std::list<std::string>& parents);
+    ReachabilityResult isReachable(const Location& location, const LocationSection& section, std::list<std::string>& parents);
     bool isVisible(const Location& location, const LocationSection& section, std::list<std::string>& parents);
-    AccessibilityLevel isReachable(const Location& location, std::list<std::string>& parents);
+    ReachabilityResult isReachable(const Location& location, std::list<std::string>& parents);
     bool isVisible(const Location& location, std::list<std::string>& parents);
-    AccessibilityLevel isReachable(const std::list< std::list<std::string> >& rules, bool visibilityRules, std::list<std::string>& parents);
+    ReachabilityResult isReachable(const std::list< std::list<std::string> >& rules, bool visibilityRules, std::list<std::string>& parents);
 
 
 protected: // Lua interface implementation
